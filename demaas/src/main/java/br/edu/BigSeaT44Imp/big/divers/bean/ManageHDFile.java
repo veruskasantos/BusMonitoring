@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
@@ -11,7 +12,7 @@ import org.apache.commons.io.FileUtils;
 public class ManageHDFile {
 
 	private static final String LINE_SEPARATOR = "\n";
-	private static final String userPath = "C:/Users/Andreza/Desktop/fetech/";
+	private static final String userPath = "C:/Users/Lucas/Desktop/tcc/";
 
 	public static File[] listFiles(String path) throws Exception {
 
@@ -59,4 +60,31 @@ public class ManageHDFile {
 
 		return file;
 	}
+	
+	// Lucas (INICIO)
+	
+	public static void createOutputFileBBDistance(String output, boolean sobrescrever) {		
+		if (sobrescrever) {
+			try {
+				FileWriter file = new FileWriter("C:/Users/Lucas/Desktop/tcc/BULMA_RT/CampinaGrande/input/saida.txt");			
+				String headerOutput = "BUSCODE,ROUTE,SHAPEID,SHAPESEQUENCE,SITUATION,CURRENTTIME,EXPECTEDTIME,LAT,LONG,-,BUSCODE,ROUTE,SHAPEID,SHAPESEQUENCE,SITUATION,CURRENTTIME,EXPECTEDTIME,LAT,LONG,ROUTESIZE,nBUSES,TRESHOLD,DISTANCEAB,TIMEBETWEENBUSES" + LINE_SEPARATOR;
+				file.write(headerOutput);
+				file.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				FileWriter file = new FileWriter("C:/Users/Lucas/Desktop/tcc/BULMA_RT/CampinaGrande/input/saida.txt", true);			
+				file.write(output);
+				file.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	// Lucas (FIM)
 }

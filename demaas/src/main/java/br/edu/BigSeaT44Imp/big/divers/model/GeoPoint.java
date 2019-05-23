@@ -37,7 +37,7 @@ public class GeoPoint {
 		return getLatLng().getLat() +","+ getLatLng().getLng();
 	}
 	
-	public static float getDistanceInMeters(GPSPoint point1, GPSPoint point2) {
+	public static float getDistanceInMeters(GeoPoint point1, GeoPoint point2) {
 		
 		return getDistanceInMeters(Double.valueOf(point1.getLatLng().getLat()), Double.valueOf(point1.getLatLng().getLng()), 
 				Double.valueOf(point2.getLatLng().getLat()), Double.valueOf(point2.getLatLng().getLng()));

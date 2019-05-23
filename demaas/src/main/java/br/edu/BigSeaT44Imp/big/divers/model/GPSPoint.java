@@ -104,7 +104,7 @@ public class GPSPoint extends GeoPoint implements Serializable {
 
 	@Override
 	public String toString() {
-		return "GPSPoint [latLong=" + getLatLng() + ", problem=" + getProblem() + ", route=" + getRoute() + "]";
+		return "GPSPoint [latLong=" + getLatLng() + ", situation=" + getSituation() + ", current time=" + getCurrentTime() + ", expected time=" + getExpectedTime() + ", code=" + getBusCode() + ", route=" + getRoute() + ", shapeId=" + getShapeId() + ", shape sequence=" + getShapeSequence() + "]";
 	}
 
 	public String getShapeSequence() {
@@ -161,6 +161,43 @@ public class GPSPoint extends GeoPoint implements Serializable {
 
 	public void setSituation(String situation) {
 		this.situation = situation;
+	}
+	
+	public float getSeconds() {
+		String[] rowsTimeStamp = currentTime.split(":");
+		
+		return Float.valueOf(rowsTimeStamp[0]) * 3600 + Float.valueOf(rowsTimeStamp[1]) * 60 + Float.valueOf(rowsTimeStamp[2]);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((busCode == null) ? 0 : busCode.hashCode());
+		result = prime * result + ((shapeId == null) ? 0 : shapeId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof GPSPoint))
+			return false;
+		GPSPoint other = (GPSPoint) obj;
+		if (busCode == null) {
+			if (other.busCode != null)
+				return false;
+		} else if (!busCode.equals(other.busCode))
+			return false;
+		if (shapeId == null) {
+			if (other.shapeId != null)
+				return false;
+		} else if (!shapeId.equals(other.shapeId))
+			return false;
+		return true;
 	}
 	
 }

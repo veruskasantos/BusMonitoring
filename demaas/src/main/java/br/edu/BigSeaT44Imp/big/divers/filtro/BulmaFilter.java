@@ -11,15 +11,17 @@ import java.util.Map;
 import org.primefaces.model.map.LatLng;
 
 import br.edu.BigSeaT44Imp.big.divers.model.Bus;
+import br.edu.BigSeaT44Imp.big.divers.model.BusStopInfo;
 import br.edu.BigSeaT44Imp.big.divers.model.ShapeLine;
 import br.edu.BigSeaT44Imp.big.divers.model.ShapePoint;
 
 public class BulmaFilter {
 	
-	private Map<String, Bus> busMap = new LinkedHashMap<String, Bus>();
 	public final static String HEADER_OUTPUT_BULMA = "TRIP_NUM,ROUTE,SHAPE_ID,SHAPE_SEQ,LAT_SHAPE,LON_SHAPE,GPS_POINT_ID,BUS_CODE,TIMESTAMP,LAT_GPS,LON_GPS,DISTANCE,THRESHOLD_PROBLEM,TRIP_PROBLEM";
-	
 	public final static String HEADER_SHAPE_FILE = "route_id,shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled";
+	
+	private Map<String, Bus> busMap = new LinkedHashMap<String, Bus>();
+	private Map<String, Map<Integer, List<BusStopInfo>>> busStopPoints = new LinkedHashMap<String, Map<Integer, List<BusStopInfo>>>();
 	private Map<String, List<ShapeLine>> shapesMap = new LinkedHashMap<>();
 	private List<Integer> listInitialPoints;
 	private List<Integer> listFinalPoints;
@@ -30,6 +32,20 @@ public class BulmaFilter {
 	private String shapeFilePath;
 	private Integer initialPoint;
 	private Integer finalPoint;
+	
+	private Comparator<BusStopInfo> comparator = new Comparator<BusStopInfo>() {
+		
+		@Override
+		public int compare(BusStopInfo o1, BusStopInfo o2) {
+			if (o1.getSeconds() < o2.getSeconds()) {
+	            return -1;
+	        }
+	        if (o1.getSeconds() > o2.getSeconds()) {
+	            return 1;
+	        }
+	        return 0;
+		}
+	};
 
 	public void selectBus () {
 		Bus selectedBus = busMap.get(this.selectedBusCode);
@@ -114,7 +130,6 @@ public class BulmaFilter {
 		currentBus.setBusCode(previousBusCode);
 		currentBus.setRoute(previousRoute);
 		busMap.put(previousBusCode, currentBus);
-
 	}
 	
 	public void populateListShapes(String[] rowsShape) {
@@ -159,7 +174,6 @@ public class BulmaFilter {
 		String ss = splittedLine[4];
 		Float distanceTraveled = Float.valueOf(splittedLine[5]);
 		return new ShapePoint(route, shapeId, ss, new LatLng(Double.valueOf(lat), Double.valueOf(lng)), distanceTraveled);
-
 	}
  	
 	public String getSelectedRoute() {
@@ -218,7 +232,6 @@ public class BulmaFilter {
 		this.busMap = busMap;
 	}
 	
-
 	public List<Integer> getListInitialPoints() {
 		return listInitialPoints;
 	}
@@ -251,5 +264,64 @@ public class BulmaFilter {
 	public void setSelectedBusCode(String busCode) {
 		this.selectedBusCode = busCode;
 	}
+	
+	public Map<String, Map<Integer, List<BusStopInfo>>> getBusStopPoints() {
+		return busStopPoints;
+	}
+
+	public void setBusStopPoints(Map<String, Map<Integer, List<BusStopInfo>>> busStopPoints) {
+		this.busStopPoints = busStopPoints;
+	}
+
+	// Lucas (INICIO)
+	
+	//Pega o tamanho de uma rota de acordo com o shapeId que indica de a rota eh de ida ou volta
+	public float getLenghtShape(String route, String shapeId) {				
+		for (ShapeLine shapeLine : shapesMap.get(route)) {	
+			if (shapeLine.getShapeId().equalsIgnoreCase(shapeId)) {
+				return shapeLine.getShapePoints().get(shapeLine.getShapePoints().size() - 1).getDistanceTraveled();
+			}
+		}
+		return 0;
+	}
+		
+	//Popula a lista com os dados de paradas dos onibus
+	public void populateBusStopPoints(String[] rowsBusStopPoints) {	
+		for (int i = 1; i < rowsBusStopPoints.length; i++) {
+			BusStopInfo busStopPoint = createBusStopPoint(rowsBusStopPoints[i]);
+			
+			if (!busStopPoints.containsKey(busStopPoint.getRoute())) {
+				busStopPoints.put(busStopPoint.getRoute(), new LinkedHashMap<Integer, List<BusStopInfo>>());
+			}
+			
+			if(!busStopPoints.get(busStopPoint.getRoute()).containsKey(busStopPoint.getStopSequence())) {
+				busStopPoints.get(busStopPoint.getRoute()).put(busStopPoint.getStopSequence(), new LinkedList<BusStopInfo>());
+			}
+			if (!busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()).contains(busStopPoint)) {
+				busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()).add(busStopPoint);
+				
+				Collections.sort(busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()), comparator);
+			}
+		}
+	}
+	
+	//Cria um ponto de parada de onibus
+	private BusStopInfo createBusStopPoint(String line) {
+		String[] splittedLine = line.split(",");
+		
+		String route = splittedLine[6];
+		String lat = splittedLine[4];
+		String lng = splittedLine[5];
+		String arrivalTime = splittedLine[0].replaceAll("\"", "");
+		String departueTime = splittedLine[1];
+		String stopId = splittedLine[2];
+		String stopSequence = splittedLine[3];
+		String shapeId = splittedLine[7];
+		String closestShapePoint = splittedLine[8];
+
+		return new BusStopInfo(new LatLng(Double.valueOf(lat), Double.valueOf(lng)), route, arrivalTime, departueTime, stopId, Integer.valueOf(stopSequence), shapeId, closestShapePoint);
+	}
+	
+	// Lucas (FIM)
 	
 }
