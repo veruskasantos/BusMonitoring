@@ -99,7 +99,7 @@ public class BusStopInfo extends GeoPoint implements Serializable {
 	
 	@Override
 	public String toString() {
-		return "BusStopPoint [latLong=" + getLatLng() + ", time arrival=" + getArrivalTime() + ", stopId=" + getStopId() + ", stopSequence=" + getStopSequence() + ", route=" + getRoute() + ", shapeId=" + getShapeId() + ", closestShapePoint=" + getClosestShapePoint() + "]";
+		return "BusStopPoint [latLong=" + getLatLng() + ", arrivalTime=" + getArrivalTime() + ", stopId=" + getStopId() + ", stopSequence=" + getStopSequence() + ", route=" + getRoute() + ", shapeId=" + getShapeId() + ", closestShapePoint=" + getClosestShapePoint() + "]";
 	}
 
 	@Override
@@ -119,8 +119,6 @@ public class BusStopInfo extends GeoPoint implements Serializable {
 		if (this == obj)
 			return true;
 		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
 			return false;
 		if (!(obj instanceof BusStopInfo))
 			return false;
@@ -149,7 +147,7 @@ public class BusStopInfo extends GeoPoint implements Serializable {
 			return false;
 		return true;
 	}
-	
+
 	public float getSeconds() {
 		String[] rowsTimeStamp = arrivalTime.split(":");
 		

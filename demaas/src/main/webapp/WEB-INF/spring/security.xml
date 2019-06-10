@@ -84,12 +84,13 @@
 	</bean>
 	  
 	<sec:http use-expressions="true" auto-config="true">
+		
 		<sec:intercept-url pattern="/protegidos/**" access="isAuthenticated()"  />
 		
 		<sec:intercept-url pattern="/javax.faces.resource**" access="permitAll" />
 		
 		<sec:intercept-url pattern="/**" access="permitAll" />
-		
+
 		<sec:form-login login-page="/login.jsf"  
 			password-parameter="j_password" 
 			username-parameter="j_username"

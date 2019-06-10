@@ -32,20 +32,6 @@ public class BulmaFilter {
 	private String shapeFilePath;
 	private Integer initialPoint;
 	private Integer finalPoint;
-	
-	private Comparator<BusStopInfo> comparator = new Comparator<BusStopInfo>() {
-		
-		@Override
-		public int compare(BusStopInfo o1, BusStopInfo o2) {
-			if (o1.getSeconds() < o2.getSeconds()) {
-	            return -1;
-	        }
-	        if (o1.getSeconds() > o2.getSeconds()) {
-	            return 1;
-	        }
-	        return 0;
-		}
-	};
 
 	public void selectBus () {
 		Bus selectedBus = busMap.get(this.selectedBusCode);
@@ -300,7 +286,18 @@ public class BulmaFilter {
 			if (!busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()).contains(busStopPoint)) {
 				busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()).add(busStopPoint);
 				
-				Collections.sort(busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()), comparator);
+				Collections.sort(busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()), new Comparator<BusStopInfo>() {
+					
+					public int compare(BusStopInfo o1, BusStopInfo o2) {
+						if (o1.getSeconds() < o2.getSeconds()) {
+				            return -1;
+				        }
+				        if (o1.getSeconds() > o2.getSeconds()) {
+				            return 1;
+				        }
+				        return 0;
+					}
+				});
 			}
 		}
 	}

@@ -7,8 +7,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-
 public class ManageHDFile {
 
 	private static final String LINE_SEPARATOR = "\n";
