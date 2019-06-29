@@ -273,31 +273,33 @@ public class BulmaFilter {
 		
 	//Popula a lista com os dados de paradas dos onibus
 	public void populateBusStopPoints(String[] rowsBusStopPoints) {	
-		for (int i = 1; i < rowsBusStopPoints.length; i++) {
-			BusStopInfo busStopPoint = createBusStopPoint(rowsBusStopPoints[i]);
-			
-			if (!busStopPoints.containsKey(busStopPoint.getRoute())) {
-				busStopPoints.put(busStopPoint.getRoute(), new LinkedHashMap<Integer, List<BusStopInfo>>());
-			}
-			
-			if(!busStopPoints.get(busStopPoint.getRoute()).containsKey(busStopPoint.getStopSequence())) {
-				busStopPoints.get(busStopPoint.getRoute()).put(busStopPoint.getStopSequence(), new LinkedList<BusStopInfo>());
-			}
-			if (!busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()).contains(busStopPoint)) {
-				busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()).add(busStopPoint);
+		if (busStopPoints.isEmpty()) {
+			for (int i = 1; i < rowsBusStopPoints.length; i++) {
+				BusStopInfo busStopPoint = createBusStopPoint(rowsBusStopPoints[i]);
 				
-				Collections.sort(busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()), new Comparator<BusStopInfo>() {
+				if (!busStopPoints.containsKey(busStopPoint.getRoute())) {
+					busStopPoints.put(busStopPoint.getRoute(), new LinkedHashMap<Integer, List<BusStopInfo>>());
+				}
+				
+				if(!busStopPoints.get(busStopPoint.getRoute()).containsKey(busStopPoint.getStopSequence())) {
+					busStopPoints.get(busStopPoint.getRoute()).put(busStopPoint.getStopSequence(), new LinkedList<BusStopInfo>());
+				}
+				if (!busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()).contains(busStopPoint)) {
+					busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()).add(busStopPoint);
 					
-					public int compare(BusStopInfo o1, BusStopInfo o2) {
-						if (o1.getSeconds() < o2.getSeconds()) {
-				            return -1;
-				        }
-				        if (o1.getSeconds() > o2.getSeconds()) {
-				            return 1;
-				        }
-				        return 0;
-					}
-				});
+					Collections.sort(busStopPoints.get(busStopPoint.getRoute()).get(busStopPoint.getStopSequence()), new Comparator<BusStopInfo>() {
+						
+						public int compare(BusStopInfo o1, BusStopInfo o2) {
+							if (o1.getSeconds() < o2.getSeconds()) {
+					            return -1;
+					        }
+					        if (o1.getSeconds() > o2.getSeconds()) {
+					            return 1;
+					        }
+					        return 0;
+						}
+					});
+				}
 			}
 		}
 	}

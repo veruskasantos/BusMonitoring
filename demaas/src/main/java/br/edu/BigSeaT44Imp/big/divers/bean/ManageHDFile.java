@@ -61,11 +61,18 @@ public class ManageHDFile {
 	
 	// Lucas (INICIO)
 	
-	public static void createOutputFileBBDistance(String output, boolean sobrescrever) {		
+	public static void createOutputFileBBDistance(String output, boolean sobrescrever, String path, String detection) {		
 		if (sobrescrever) {
 			try {
-				FileWriter file = new FileWriter("C:/Users/Lucas/Desktop/tcc/BULMA_RT/CampinaGrande/input/saida.txt");			
-				String headerOutput = "BUSCODE,ROUTE,SHAPEID,SHAPESEQUENCE,SITUATION,CURRENTTIME,EXPECTEDTIME,LAT,LONG,-,BUSCODE,ROUTE,SHAPEID,SHAPESEQUENCE,SITUATION,CURRENTTIME,EXPECTEDTIME,LAT,LONG,ROUTESIZE,nBUSES,TRESHOLD,DISTANCEAB,TIMEBETWEENBUSES" + LINE_SEPARATOR;
+				FileWriter file = new FileWriter(userPath + path + "/input/saida.txt");			
+				String headerOutput;
+				
+				if (detection.equalsIgnoreCase("Distance")) {
+					headerOutput = "BUSCODE,ROUTE,SHAPEID,SHAPESEQUENCE,SITUATION,CURRENTTIME,EXPECTEDTIME,LAT,LONG,-,BUSCODE,ROUTE,SHAPEID,SHAPESEQUENCE,SITUATION,CURRENTTIME,EXPECTEDTIME,LAT,LONG,ROUTESIZE,nBUSES,TRESHOLD,DISTANCEAB,TIMEBETWEENBUSES" + LINE_SEPARATOR;
+				} else {
+					headerOutput = "BUSCODE,ROUTE,BUSONSTOPTIMESTAMP,HEADWYPROGRAMADO,-,BUSCODE,ROUTE,BUSONSTOPTIMESTAMP,HEADWYPROGRAMADO,HEADWAYPROGRAMADO,HEADWAYREAL,TRESHOLD" + LINE_SEPARATOR;
+				}
+				
 				file.write(headerOutput);
 				file.close();
 			} catch (IOException e) {
@@ -74,7 +81,7 @@ public class ManageHDFile {
 			}
 		} else {
 			try {
-				FileWriter file = new FileWriter("C:/Users/Lucas/Desktop/tcc/BULMA_RT/CampinaGrande/input/saida.txt", true);			
+				FileWriter file = new FileWriter(userPath + path + "/input/saida.txt", true);			
 				file.write(output);
 				file.close();
 			} catch (IOException e) {
