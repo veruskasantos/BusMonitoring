@@ -1,39 +1,20 @@
 ---RODANDO LOCALMENTE--
 
-Executar o ./ligar_hadoop_spark.sh no servidor para ligar o hadoop e permitir o acesso ao HDFS
-
 1. Roda OndeBUS App
 
+Para CADA CIDADE:
 
-Para os dados de **Campina Grande**:
+2. Abre um terminal para rodar BulmaStreaming da cidade desejada:
 
-2. Abre um terminal para rodar BulmaStreaming em CampinaGrande/input:
+-> cd <path>/OndeBUS/data/<cidade>/input/
 
--> cd Desktop/OndeBUS/BULMA_RT/CampinaGrande/input/
+-> java -jar -Xmx1024M <path>/OndeBUS/libs/BULMA_RT_<cidade>.jar shape_<cidade>.csv stopTimeOutput<cidade>.txt localhost 9998 ../output/ <num_particoes(ex:1)> <intervalo(ex:20)>
 
--> java -jar -Xmx1024M BULMA_RT_CG.jar shape_CampinaGrande.csv stopTimeOutput.txt localhost 9998 /BULMA_RT/CampinaGrande/output/ 1 20
+3. Abre outro terminal para rodar StreamSimulationFile (simulador de dados de GPS em tempo real, a partir de dados históricos):
 
-3. Abre um terminal para rodar StreamSimulationFile (simulador de dados de GPS em tempo real, a partir de dados históricos) em CampinaGrande/input
+-> cd <path>/OndeBUS/data/<cidade>/input/
 
--> cd Desktop/OndeBUS/BULMA_RT/CampinaGrande/input/
-
--> java -jar StreamSimulationFile.jar 9998 CampinaGrande_2017-10-21.csv 3
-
-
-
-Para os dados de **Curitiba**:
-
-2. Abre um terminal para rodar BulmaStreaming em Curitiba/input
-
-cd Desktop/fetech/BULMA_RT/Curitiba/input/
-
-java -jar -Xmx1024M BULMA_RT_CURITIBA.jar shape_Curitiba.csv stopTimeOutput.txt localhost  9997 /BULMA_RT/Curitiba/output/ 1 20
-
-3. Abre um terminal para rodar StreamSimulationFile em Curitiba/input
-
-cd Desktop/OndeBUS/BULMA_RT/Curitiba/input/
-
-java -jar StreamSimulationFile.jar 9997 Curitiba_2017-10-21.csv 3
+-> java -jar <path>/OndeBUS/libs/StreamSimulationFile.jar 9998 GPS_<cidade>_2017-10-21.csv <janela_de_dados(ex:3)>
 
 
 --------------------
