@@ -94,7 +94,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 
 	//
 	private static String[] CITIES_NAME = {"Campina Grande", "Curitiba"};
-	private static String BULMA_RT_PATH = "BULMA_RT/";
+//	private static String BULMA_RT_PATH = "BULMA_RT/";
 	private static float THRESHOLD_VELOCITY = 0.6f;
 	private String shapePath;
 	private static final String LINE_SEPARATOR = "\n";
@@ -176,7 +176,9 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		}	
 	}
 
-	private LatLng getClosestShapePoint(Double velocity, BusInMovementInfo busIMInfo) {
+	
+	// Get the possible next shape point based on the last distance/time (velocity)
+	private LatLng getNextClosestShapePoint(Double velocity, BusInMovementInfo busIMInfo) {
 		long systemTime = System.currentTimeMillis();
 //		long busTime = busIMInfo.getLastGPSPoint().getTime();
 		long busTime = busIMInfo.getLastTime();
@@ -231,6 +233,8 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 
 						// TODO Mudar essa condição abaixo para refletir o
 						// cenário correto
+						
+						// Move the bus if the calculated travelled distance >= next shape point distance
 						if (distanceOnCurrentTime >= currentDeltaDistance) {
 							busIMInfo.setShapeSequence(shapeSequence);
 							// TODO Mudar a linha abaixo
@@ -579,7 +583,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 			   + time 
 			   + LINE_SEPARATOR;
 		
-		String file = ManageHDFile.openFile(getSelectedPath() + "/input/saida.txt");
+		String file = ManageHDFile.openFile(getSelectedPath() + "/output_bb/bbDistanceOutput.csv");
 	    
 		if (!file.contains(output)) {
 			ManageHDFile.createOutputFileBBDistance(output, false, getSelectedPath(), "Distance");
@@ -620,7 +624,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		// Atualiza de acordo com GPS
 		if (busIMInfo.getPenultimateGPSPoint() != null && !busIMInfo.getLastGPSPoint().isAboveThreshold()) {
 			Double velocity = getVelocity(busIMInfo.getLastGPSPoint(), busIMInfo.getPenultimateGPSPoint()) * THRESHOLD_VELOCITY;
-			return getClosestShapePoint(velocity, busIMInfo);
+			return getNextClosestShapePoint(velocity, busIMInfo);
 		}
 
 		return busIMInfo.getLastGPSPoint().getLatLng();
@@ -665,7 +669,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		
 		bulmaFilter.getShapesMap().clear();
 		setSelectedNode(getLastSelectedNode());
-		setSelectedPath(service.getNodePath(selectedNode).replaceFirst("/", ""));
+		setSelectedPath(service.getNodePath(selectedNode).replaceFirst("/BULMA_RT/", ""));
 		
 		if (getSelectedPath().contains("CampinaGrande")) {
 			setCenterMap("-7.228448, -35.881222");
@@ -983,7 +987,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 	}
 
 	public void setSelectedPath(String selectedPath) {
-		this.selectedPath = BULMA_RT_PATH + selectedPath.replace(" ", "");
+		this.selectedPath = selectedPath.replace(" ", "");
 	}
 
 	public TreeNode getSelectedNode() {

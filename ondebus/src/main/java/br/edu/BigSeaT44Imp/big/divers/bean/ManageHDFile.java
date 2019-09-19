@@ -1,23 +1,23 @@
 package br.edu.BigSeaT44Imp.big.divers.bean;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class ManageHDFile {
 
 	private static final String LINE_SEPARATOR = "\n";
-	private static final String userPath = "C:/Users/Lucas/Desktop/tcc/";
+	private static final String userPath = "/home/veruska/Documentos/Mestrado/BusMonitoring/data";
 
 	public static File[] listFiles(String path) throws Exception {
-
 		File[] files = new File(userPath + path).listFiles();
 		return files;
 	}
-	
 	
 	public static void deleteFile(String path) {
 		
@@ -37,19 +37,11 @@ public class ManageHDFile {
 
 	// read file
 	public static String openFile(String path) {
-
-		BufferedReader br;
-		String currentLine;
 		String file = "";
-
 		try {
 
-			br = new BufferedReader(new FileReader(userPath + path));
-			while ((currentLine = br.readLine()) != null) {
-				file += currentLine + LINE_SEPARATOR;
-			}
+			file = new String(Files.readAllBytes(Paths.get(userPath + path)), StandardCharsets.UTF_8);
 
-			br.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -64,7 +56,8 @@ public class ManageHDFile {
 	public static void createOutputFileBBDistance(String output, boolean sobrescrever, String path, String detection) {		
 		if (sobrescrever) {
 			try {
-				FileWriter file = new FileWriter(userPath + path + "/input/saida.txt");			
+				String city = path.substring(path.indexOf("/"));
+				FileWriter file = new FileWriter(userPath + city + "/output_bb/bbDistanceOutput.csv");			
 				String headerOutput;
 				
 				if (detection.equalsIgnoreCase("Distance")) {
