@@ -1,4 +1,4 @@
----RODANDO LOCALMENTE--
+g---RODANDO LOCALMENTE--
 
 1. Roda OndeBUS App
 
@@ -6,15 +6,17 @@ Para CADA CIDADE:
 
 2. Abre um terminal para rodar BulmaStreaming da cidade desejada:
 
--> cd <path>/OndeBUS/data/<cidade>/input/
+-> cd <path>/BusMonitoring/data/<cidade>/input/
 
--> java -jar -Xmx1024M <path>/OndeBUS/libs/BULMA_RT_<cidade>.jar shape_<cidade>.csv stopTimeOutput<cidade>.txt localhost 9998 ../output/ <num_particoes(ex:1)> <intervalo(ex:20)>
+(Se houver algum arquivo em <cidade>/input/, deleta tudo)
+
+-> java -jar -Xmx1024M ../../../libs/BULMA_RT_<cidade>.jar shape_<cidade>.csv stopTimeOutput<cidade>.txt localhost 9998 ../output/ <num_particoes(ex:1)> <intervalo(ex:20)>
 
 3. Abre outro terminal para rodar StreamSimulationFile (simulador de dados de GPS em tempo real, a partir de dados históricos):
 
--> cd <path>/OndeBUS/data/<cidade>/input/
+-> cd <path>/BusMonitoring/data/<cidade>/input/
 
--> java -jar <path>/OndeBUS/libs/StreamSimulationFile.jar 9998 GPS_<cidade>_2017-10-21.csv <janela_de_dados(ex:3)>
+-> java -jar <path>/BusMonitoring/libs/StreamSimulationFile.jar 9998 GPS_<cidade>_2017-10-21.csv <janela_de_dados(ex:3)>
 
 
 --------------------
