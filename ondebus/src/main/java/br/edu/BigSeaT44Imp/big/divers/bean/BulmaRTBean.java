@@ -128,6 +128,8 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		cleanMap();
 		bbBusCodeRoute.clear();
 		bbDetection = false;
+
+		ajaxPoll();
 	}
 
 	public void populateCitiesNameList() {

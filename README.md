@@ -10,7 +10,7 @@ Para CADA CIDADE:
 
 (Se houver algum arquivo em <cidade>/input/, deleta tudo)
 
--> java -jar -Xmx1024M ../../../libs/BULMA_RT_<cidade>.jar shape_<cidade>.csv stopTimeOutput<cidade>.txt localhost 9998 ../output/ <num_particoes(ex:1)> <intervalo(ex:20)>
+-> java -jar -Xmx1024M ../../../libs/BULMA_RT_<cidade>.jar shape_<cidade>.csv stopTimeOutput.txt localhost 9998 ../output/ <num_particoes(ex:1)> <intervalo(ex:20)>
 
 3. Abre outro terminal para rodar StreamSimulationFile (simulador de dados de GPS em tempo real, a partir de dados históricos):
 
