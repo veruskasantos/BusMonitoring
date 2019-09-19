@@ -1,4 +1,4 @@
-g---RODANDO LOCALMENTE--
+---RODANDO LOCALMENTE--
 
 1. Roda OndeBUS App
 
@@ -16,7 +16,7 @@ Para CADA CIDADE:
 
 -> cd <path>/BusMonitoring/data/<cidade>/input/
 
--> java -jar <path>/BusMonitoring/libs/StreamSimulationFile.jar 9998 GPS_<cidade>_2017-10-21.csv <janela_de_dados(ex:3)>
+-> java -jar ../../../libs/StreamSimulationFile.jar 9998 GPS_<cidade>_2017-10-21.csv <janela_de_dados(ex:3)>
 
 
 --------------------
