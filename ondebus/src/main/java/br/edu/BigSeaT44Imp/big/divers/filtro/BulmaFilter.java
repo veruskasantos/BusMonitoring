@@ -316,7 +316,9 @@ public class BulmaFilter {
 		String stopId = splittedLine[2];
 		String stopSequence = splittedLine[3];
 		String shapeId = splittedLine[7];
-		String closestShapePoint = splittedLine[8];
+		String closestShapePoint = splittedLine[8].replace("\r","");
+//		String a = splittedLine[8].replace("\r","");
+//		String e = splittedLine[8].replaceAll("\\r","");
 
 		return new BusStopInfo(new LatLng(Double.valueOf(lat), Double.valueOf(lng)), route, arrivalTime, departueTime, stopId, Integer.valueOf(stopSequence), shapeId, closestShapePoint);
 	}

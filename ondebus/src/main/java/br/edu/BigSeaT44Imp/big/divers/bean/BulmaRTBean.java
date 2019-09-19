@@ -94,7 +94,6 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 
 	//
 	private static String[] CITIES_NAME = {"Campina Grande", "Curitiba"};
-//	private static String BULMA_RT_PATH = "BULMA_RT/";
 	private static float THRESHOLD_VELOCITY = 0.6f;
 	private String shapePath;
 	private static final String LINE_SEPARATOR = "\n";
@@ -122,7 +121,6 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		bbBusCodeRoute = new HashMap<>();
 		
 		populateCitiesNameList();
-		//bbBusStopPointsPopulate();
 	}
 	
 	public void onPageLoad() {
@@ -327,12 +325,14 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 				if (!bbBusCodeRoute.isEmpty()) {
 					if (bbCount++ == 300) {	bbCount = 0; bbBusCodeRoute.clear(); }
 				}
+				
 				bbHeadwayDetection();
 			}
 		}
 	}
 	
 	private void bbHeadwayDetection() {
+		
 		for (Entry<String, BusInMovementInfo> entry : busInMoviment.entrySet()) {
 			
 			BusInMovementInfo busIMI = entry.getValue();
@@ -431,7 +431,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		}
 	}
 	
-	private void bbHeadwayPopulate (String route, BusStopInfo busStop, float headwayProgramado) {
+	private void bbHeadwayPopulate(String route, BusStopInfo busStop, float headwayProgramado) {
 		if (bbBusHeadwayInfo.get(route).get(busStop).size() > 1) {
 			BusHeadwayInfo bus1 = bbBusHeadwayInfo.get(route).get(busStop).get(0);
 			BusHeadwayInfo bus2 = bbBusHeadwayInfo.get(route).get(busStop).get(1);
@@ -485,7 +485,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		String[] rowsBusStopPoints = null;
 		
 		try {
-			rowsBusStopPoints = ManageHDFile.openFile("BULMA_RT/CampinaGrande/input/stopTimeOutput.txt").split("\n");
+			rowsBusStopPoints = ManageHDFile.openFile(getSelectedPath() + "input/stopTimeOutput.txt").split("\n");
 		} catch (Exception e) {
 			System.err.println("Could not read file.");
 		}
@@ -550,7 +550,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 			   + (headwayProgramado / 4) + ","
 			   + LINE_SEPARATOR;
 		
-		String file = ManageHDFile.openFile(getSelectedPath() + "/input/saida.txt");
+		String file = ManageHDFile.openFile(getSelectedPath() + "/output_bb/bbDistanceOutput.csv");
 	    
 		if (!file.contains(output)) {
 			ManageHDFile.createOutputFileBBDistance(output, false, getSelectedPath(), "Headway");
@@ -669,7 +669,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		
 		bulmaFilter.getShapesMap().clear();
 		setSelectedNode(getLastSelectedNode());
-		setSelectedPath(service.getNodePath(selectedNode).replaceFirst("/BULMA_RT/", ""));
+		setSelectedPath(service.getNodePath(selectedNode));
 		
 		if (getSelectedPath().contains("CampinaGrande")) {
 			setCenterMap("-7.228448, -35.881222");
@@ -680,8 +680,9 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		}
 		
 		ManageHDFile.createOutputFileBBDistance("", true, getSelectedPath(), selectedDetection);
-				
+
 		populateListShapes();
+		bbBusStopPointsPopulate();
 		
 		cleanMap();
 		
