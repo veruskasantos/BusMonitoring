@@ -10,9 +10,8 @@
 	<ui:define name="content">
 		<div class="Container100">
 			<div class="ContainerIndent">
-				<script
-					src="http://maps.google.com/maps/api/js?key=AIzaSyDIjgyZtYkE0Q6JSKCF_idkkxzHhhGii-I"
-					type="text/javascript"></script>
+				<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0BrtxMOlnIMKgnt2eolt39dUmevdpt6c"
+						type="text/javascript"></script>
 				<!--  Use this URL for development-->
 				<script
 					src="https://rawgit.com/googlemaps/v3-utility-library/master/markerwithlabel/src/markerwithlabel.js"
@@ -24,25 +23,18 @@
 				<script>
 					//<![CDATA[
 					var infowindow = new google.maps.InfoWindow({});
-
 					var markerClicked;
 					function handleComplete(xhr, status, args) {
-
 						try {
 							var gmap = PF('gmap').getMap();
 							var newMarkers = eval('(' + args.newMarkers + ')');
-
 							if (gmap.markers == null) {
 								console.log("null");
 								gmap.markers = [];
 							}
-
 							for (i = 0; i < newMarkers.length; i++) {
-
 								var newMarker = newMarkers[i];
-
 								if (gmap.markers[i] == null) { // Create your marker here
-
 									var marker = new MarkerWithLabel({
 										position : newMarker.latlng,
 										map : gmap,
@@ -54,9 +46,7 @@
 										labelInBackground : false
 									});
 									gmap.markers.push(marker);
-
 								} else { // Update your marker here
-
 									if (gmap.markers[i].labelContent == null) {
 										gmap.markers[i].setMap(null);
 										gmap.markers[i] = new MarkerWithLabel(
@@ -76,28 +66,23 @@
 										gmap.markers[i].data = newMarker.data;
 									}
   								}
-
 								var contentString = "<div id='iw-container'> "
 										+ gmap.markers[i].data
 										+ "<p> Position: "
 										+ gmap.markers[i].position.lat() + ", "
 										+ gmap.markers[i].position.lng()
 										+ "</p>" + "</div>";
-
 								if (isInfoWindowOpen(infowindow)
 										&& gmap.markers[i] == markerClicked) {
 									infowindow.setContent(contentString);
 								}
 								bindInfoWindow(gmap.markers[i], gmap,
 										infowindow, contentString);
-
 							}
-
 						} catch (e) {
 							console.log("ERROR: " + e.message);
 						}
 					}
-
 					function bindInfoWindow(marker, map, infowindow, html) {
 						google.maps.event.addListener(marker, 'click',
 								function() {
@@ -105,14 +90,11 @@
 									infowindow.open(map, marker);
 									markerClicked = marker;
 								});
-
 					}
-
 					function isInfoWindowOpen(infowindow) {
 						var map = infowindow.getMap();
 						return (map !== null && typeof map !== "undefined");
 					}
-
 					function startProgressBar(xhr, status, args) {
 						
 						var buses = eval('(' + args.buses + ')');
@@ -209,9 +191,9 @@
 
 					<p:layoutUnit position="north" >
 
-						<p:tabView id="idTabView" dynamic="true" cache="true">
+						<!-- <p:tabView id="idTabView" dynamic="true" cache="true">
 
-							<p:tab id="tabFolders" title="Folders">
+							<p:tab id="tabFolders" title="Folders"> -->
 								<h:panelGrid columns="2" cellpadding="1000" width="100%">
 									<h:panelGrid columns="2" cellpadding="5" id="panelDialog"
 										style="height:100%">
@@ -276,8 +258,8 @@
 
 									</h:panelGrid>
 								</h:panelGrid>
-							</p:tab>
-						</p:tabView>
+							<!-- </p:tab>
+						</p:tabView> -->
 
 
 					</p:layoutUnit>
