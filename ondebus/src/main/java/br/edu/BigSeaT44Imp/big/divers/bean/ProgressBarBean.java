@@ -13,8 +13,6 @@ import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.primefaces.context.RequestContext;
 import org.primefaces.model.TreeNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +51,6 @@ public class ProgressBarBean extends AbstractBean implements Serializable {
 	private String selectedBusCode;
 	
 	private static final String TYPE_DIRECTORY = "DIRECTORY";
-	private static String BULMA_RT_PATH = "BULMA_RT/";
 	private String shapePath;
 	private TreeNode selectedNode;
 	private static TreeNode lastSelectedNode;
@@ -368,7 +365,7 @@ public class ProgressBarBean extends AbstractBean implements Serializable {
 
 	public void showBusProgress() {
 		setSelectedNode(getLastSelectedNode());
-		setSelectedPath(service.getNodePath(selectedNode).replaceFirst("/", ""));
+		setSelectedPath(service.getNodePath(selectedNode));
 		
 		cleanData();
 		populateListShapes();
@@ -490,7 +487,7 @@ public class ProgressBarBean extends AbstractBean implements Serializable {
 	}
 
 	public void setSelectedPath(String selectedPath) {
-		this.selectedPath = BULMA_RT_PATH + selectedPath.replace(" ", "");
+		this.selectedPath = selectedPath.replace(" ", "");
 	}
 
 	public List<String> getListRoutes() {
