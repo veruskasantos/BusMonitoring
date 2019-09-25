@@ -8,11 +8,15 @@ public class ShapePoint extends GeoPoint {
 	private String shapeSequence;
 	private Float distanceTraveled;
 		
-	public ShapePoint(String route, String shapeId, String shapeSequence, LatLng coord, Float distanceTraveled) {
+	public ShapePoint(String route, String shapeId, String shapeSequence, LatLng coord, Float distanceTraveled, String city) {
 		super(coord, route);
 		this.ShapeId = shapeId;
 		this.shapeSequence = shapeSequence;
-		this.distanceTraveled = distanceTraveled;
+		if (city.contains("CampinaGrande")) {
+			this.distanceTraveled = distanceTraveled * 1000;
+		} else {
+			this.distanceTraveled = distanceTraveled;
+		}
 	}
 	
 	public String getShapeId() {

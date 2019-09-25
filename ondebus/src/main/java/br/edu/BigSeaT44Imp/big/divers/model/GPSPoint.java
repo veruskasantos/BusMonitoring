@@ -20,10 +20,12 @@ public class GPSPoint extends GeoPoint implements Serializable {
 	private String expectedTime;
 	private String currentTime;
 	private String situation;
+	private LatLng latLongShape;
 
-	public GPSPoint(LatLng latLng, String problem, String busCode, String timestamp, String shapeId,
+	public GPSPoint(LatLng latLng, LatLng latLngShape, String problem, String busCode, String timestamp, String shapeId,
 			String shapeSequence, Double distanceTraveled, String route, String expectedTime, String currentTime, String situation ) {
 		super(latLng, route);
+		this.latLongShape = latLngShape;
 		this.problem = problem;
 		this.busCode = busCode;
 		this.timeStamp = timestamp;
@@ -35,6 +37,18 @@ public class GPSPoint extends GeoPoint implements Serializable {
 		this.situation = situation;
 		
 	}
+
+	public LatLng getLatLongShape() {
+		return latLongShape;
+	}
+
+
+
+	public void setLatLongShape(LatLng latLongShape) {
+		this.latLongShape = latLongShape;
+	}
+
+
 
 	public String getTimeStamp() {
 		return timeStamp;
@@ -104,7 +118,9 @@ public class GPSPoint extends GeoPoint implements Serializable {
 
 	@Override
 	public String toString() {
-		return "GPSPoint [latLong=" + getLatLng() + ", situation=" + getSituation() + ", current time=" + getCurrentTime() + ", expected time=" + getExpectedTime() + ", code=" + getBusCode() + ", route=" + getRoute() + ", shapeId=" + getShapeId() + ", shape sequence=" + getShapeSequence() + "]";
+//		return "GPSPoint [latLong=" + getLatLng() + ", situation=" + getSituation() + ", current time=" + getCurrentTime() + ", expected time=" + getExpectedTime() + ", code=" + getBusCode() + ", route=" + getRoute() + ", shapeId=" + getShapeId() + ", shape sequence=" + getShapeSequence() + "]";
+		return "GPSPoint [latLong=" + getLatLng() + ", situation=" + getSituation() + ", expected time=" + getExpectedTime() + ", code=" + getBusCode() + ", route=" + getRoute() + ", shapeId=" + getShapeId() + ", shape sequence=" + getShapeSequence() + "]";
+
 	}
 
 	public String getShapeSequence() {
@@ -147,13 +163,13 @@ public class GPSPoint extends GeoPoint implements Serializable {
 		this.expectedTime = expectedTime;
 	}
 
-	public String getCurrentTime() {
-		return currentTime;
-	}
-
-	public void setCurrentTime(String currentTime) {
-		this.currentTime = currentTime;
-	}
+//	public String getCurrentTime() {
+//		return currentTime;
+//	}
+//
+//	public void setCurrentTime(String currentTime) {
+//		this.currentTime = currentTime;
+//	}
 
 	public String getSituation() {
 		return situation;

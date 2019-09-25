@@ -20,10 +20,10 @@ public class GeoPoint {
 	public LatLng getLatLng() {
 		return latLng;
 	}
-
-	public void setLatLng(LatLng latLng) {
-		this.latLng = latLng;
-	}
+//
+//	public void setLatLng(LatLng latLng) {
+//		this.latLng = latLng;
+//	}
 
 	public String getRoute() {
 		return route;

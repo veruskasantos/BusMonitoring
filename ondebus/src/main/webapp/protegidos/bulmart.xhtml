@@ -11,7 +11,7 @@
 		<div class="Container100">
 			<div class="ContainerIndent">
 				<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD0ibYgLhl4_3qWyItCmanAjLqJnIgGBmU"
-						type="text/javascript"></script>
+type="text/javascript"></script>
 				<!--  Use this URL for development-->
 				<script
 					src="https://rawgit.com/googlemaps/v3-utility-library/master/markerwithlabel/src/markerwithlabel.js"
@@ -299,11 +299,11 @@
 								
 								<p:commandButton value="Filter" icon="ui-icon-check"
 									actionListener="#{bulmaRTBean.filterBusesMap()}"
-									onclick="PF('poll').start()" update="@form" />
+									 update="@form" />
 								
 								<p:growl id="bbDetection" />
 						        <p:selectBooleanCheckbox value="#{bulmaRTBean.bbDetection}" itemLabel="Show Bus Bunching">
-						            <p:ajax update="bbDetection" listener="#{bulmaRTBean.addMessage()}" />
+						            <p:ajax update="bbDetection" global="false" listener="#{bulmaRTBean.addMessage()}" />
 						        </p:selectBooleanCheckbox>
 							
 							</h:panelGrid>

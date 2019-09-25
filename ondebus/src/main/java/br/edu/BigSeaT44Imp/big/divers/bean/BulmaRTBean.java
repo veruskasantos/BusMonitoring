@@ -2,8 +2,6 @@ package br.edu.BigSeaT44Imp.big.divers.bean;
 
 import java.io.File;
 import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -94,9 +92,12 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 
 	//
 	private static String[] CITIES_NAME = {"Campina Grande", "Curitiba"};
-	private static float THRESHOLD_VELOCITY = 0.6f;
+	private static double THRESHOLD_VELOCITY = 0.6;
 	private String shapePath;
 	private static final String LINE_SEPARATOR = "\n";
+	
+	private static final double MAX_VELOCITY = 15.; // mean velocity of buses in m/s 
+	private static final float THRESHOLD_BB_DISTANCE = 10;
 	
 	@PostConstruct
 	public void init() {
@@ -124,10 +125,10 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 	}
 	
 	public void onPageLoad() {
-//		RequestContext.getCurrentInstance().addCallbackParam("newMarkers", new Gson().toJson(""));
-//		cleanMap();
-//		bbBusCodeRoute.clear();
-//		bbDetection = false;
+		RequestContext.getCurrentInstance().addCallbackParam("newMarkers", new Gson().toJson(""));
+		cleanMap();
+		bbBusCodeRoute.clear();
+		bbDetection = false;
 	}
 
 	public void populateCitiesNameList() {
@@ -177,76 +178,58 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 	
 	// Get the possible next shape point based on the last distance/time (velocity)
 	private LatLng getNextClosestShapePoint(Double velocity, BusInMovementInfo busIMInfo) {
-		long systemTime = System.currentTimeMillis();
-//		long busTime = busIMInfo.getLastGPSPoint().getTime();
-		long busTime = busIMInfo.getLastTime();
+		long busTime = busIMInfo.getLastGPSPoint().getTime();
+//		long busTime = busIMInfo.getLastTime();
 
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
 		Calendar cal = Calendar.getInstance();
-		int year = cal.get(Calendar.YEAR);
-		int month = cal.get(Calendar.MONTH);
-		int day = cal.get(Calendar.DAY_OF_MONTH);
-		int hours = cal.get(Calendar.HOUR_OF_DAY);
-		int minutes = cal.get(Calendar.MINUTE);
-		int seconds = cal.get(Calendar.SECOND);
 
-		String dateInString = day + "-" + month + "-" + year + " " + hours + ":" + minutes + ":" + seconds;
-
-		try {
-			systemTime = sdf.parse(dateInString).getTime();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
-
-		systemTime = cal.get(Calendar.SECOND) + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.HOUR_OF_DAY) * 3600;
+		long systemTime = cal.get(Calendar.SECOND) + cal.get(Calendar.MINUTE) * 60 + cal.get(Calendar.HOUR_OF_DAY) * 3600;
 
 		long currentDeltaTime = systemTime - busTime;
 
 		Double distanceOnCurrentTime = velocity * currentDeltaTime;
 
-		float lastDistanceTraveled = 0;
+		double lastDistanceTraveled = busIMInfo.getLastDistanceTraveled();
 		float nextDistanceTraveled = 0;
 
 		String currentRoute = busIMInfo.getLastGPSPoint().getRoute();
 		if (currentRoute.equals("-")) {
-			return busIMInfo.getLastGPSPoint().getLatLng();
+			return busIMInfo.getLastLatLng();
 		}
 
 		for (ShapeLine shapeLine : bulmaFilter.getShapesMap().get(currentRoute)) {
+			
 			if (shapeLine.getShapeId().equals(busIMInfo.getLastGPSPoint().getShapeId())) {
 				String lastShapeSequence = "";
 				for (ShapePoint currentShapePoint : shapeLine.getShapePoints()) {
 					// TODO migrar para Map
-					String shapeSequence = currentShapePoint.getShapeSequence();
+					String currentShapeSequence = currentShapePoint.getShapeSequence();
 
-					if (currentShapePoint.getShapeSequence().equals(busIMInfo.getShapeSequence())) {
-						lastDistanceTraveled = currentShapePoint.getDistanceTraveled();
-						lastShapeSequence = shapeSequence;
+					if (currentShapeSequence.equals(busIMInfo.getShapeSequence())) {
+						
+						lastShapeSequence = currentShapeSequence;
 
-					} else if (!lastShapeSequence.isEmpty() && currentShapePoint.getShapeSequence()
+					} else if (!lastShapeSequence.isEmpty() && currentShapeSequence
 							.equals(String.valueOf(Long.valueOf(lastShapeSequence) + 1))) {
+						
 						nextDistanceTraveled = currentShapePoint.getDistanceTraveled();
 
-						float currentDeltaDistance = nextDistanceTraveled - lastDistanceTraveled;
-
-						// TODO Mudar essa condição abaixo para refletir o
-						// cenário correto
+						double currentDeltaDistance = nextDistanceTraveled - lastDistanceTraveled;
 						
 						// Move the bus if the calculated travelled distance >= next shape point distance
 						if (distanceOnCurrentTime >= currentDeltaDistance) {
-							busIMInfo.setShapeSequence(shapeSequence);
-							// TODO Mudar a linha abaixo
-//							busIMInfo.getLastGPSPoint().setShapeSequence(shapeSequence);
-							busIMInfo.getPenultimateGPSPoint().setLatLng(busIMInfo.getLastGPSPoint().getLatLng());
-							
-							busIMInfo.getLastGPSPoint().setLatLng(currentShapePoint.getLatLng());
+							busIMInfo.setShapeSequence(currentShapeSequence);
 							busIMInfo.setLastTime(systemTime);
+							busIMInfo.setLastLatLng(currentShapePoint.getLatLng());
 							busInMoviment.put(busIMInfo.getLastGPSPoint().getBusCode(), busIMInfo);
 
 							return currentShapePoint.getLatLng();
 						}
+						
+						break; // stop the search if the next closest shape point is not reachable yet
 					}
 				}
+				break; // stop the search for another shape (different of the current) 
 			}
 		}
 		return null;
@@ -283,7 +266,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 						newMapPoints.remove(keyMap);
 					}
 
-					newMarker.setLatlng(gpsTmp.getLatLng());
+					newMarker.setLatlng(gpsTmp.getLatLongShape());
 				}
 
 				if (!newMapPoints.containsKey(keyMap)) {
@@ -396,9 +379,8 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 
 				// Tamanho da rota em Km
 				float lengthRoute = this.bulmaFilter.getLenghtShape(route, headBus.getLastGPSPoint().getShapeId());				
-				
-				//Converte para metros e divide por um quarto
-				float tresholdDistance = ((lengthRoute * 1000) / nOfBusesOnRoute) / 4;
+			
+				float tresholdDistance = (lengthRoute / nOfBusesOnRoute) / THRESHOLD_BB_DISTANCE;
 				
 				for (BusInMovementInfo nextBus : busesInRoute) {
 					float distance = GPSPoint.getDistanceInMeters(headBus.getLastGPSPoint(), nextBus.getLastGPSPoint());
@@ -521,7 +503,8 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		return busIMI.getPenultimateGPSPoint() != null
 			&& (GeoPoint.getDistanceInMeters(busIMI.getPenultimateGPSPoint(), busIMI.getLastGPSPoint())
 					>= GeoPoint.getDistanceInMeters(busIMI.getPenultimateGPSPoint(), busSP))
-			&& !busIMI.getLastGPSPoint().getLatLongString().equalsIgnoreCase(busIMI.getPenultimateGPSPoint().getLatLongString())
+			&& !busIMI.getLastLatLongString().equalsIgnoreCase(busIMI.getPenultimateGPSPoint().getLatLongString())
+//			&& !busIMI.getLastGPSPoint().getLatLongString().equalsIgnoreCase(busIMI.getPenultimateGPSPoint().getLatLongString())
 			&& busIMI.getLastGPSPoint().getShapeSequence() != null
 			&& busIMI.getPenultimateGPSPoint().getShapeSequence() != null
 			&& busSP.getClosestShapePoint() != null
@@ -566,7 +549,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 			   + bus1.getLastGPSPoint().getShapeId() + ","
 			   + bus1.getLastGPSPoint().getShapeSequence() + ","
 			   + bus1.getLastGPSPoint().getSituation() + ","
-			   + bus1.getLastGPSPoint().getCurrentTime() + ","
+//			   + bus1.getLastGPSPoint().getCurrentTime() + ","
 			   + bus1.getLastGPSPoint().getExpectedTime() + ","
 			   + bus1.getLastGPSPoint().getLatLongString() + ","
 			   + "-" + ","
@@ -575,7 +558,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 			   + bus2.getLastGPSPoint().getShapeId() + ","
 			   + bus1.getLastGPSPoint().getShapeSequence() + ","
 			   + bus2.getLastGPSPoint().getSituation() + ","
-			   + bus2.getLastGPSPoint().getCurrentTime() + ","
+//			   + bus2.getLastGPSPoint().getCurrentTime() + ","
 			   + bus2.getLastGPSPoint().getExpectedTime() + ","
 			   + bus2.getLastGPSPoint().getLatLongString() + ","
 			   + lengthRoute + ","
@@ -622,20 +605,29 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 	// Lucas (FIM)
 
 	private LatLng performVirtualProgress(BusInMovementInfo busIMInfo) {
+		
+		if (busIMInfo.getLastGPSPoint().getBusCode().equals("1075")) {
+			System.out.println("");
+		}
 
 		// Atualiza de acordo com GPS
 		if (busIMInfo.getPenultimateGPSPoint() != null && !busIMInfo.getLastGPSPoint().isAboveThreshold()) {
-			//Double velocity = getVelocity(busIMInfo.getLastGPSPoint(), busIMInfo.getPenultimateGPSPoint()) * THRESHOLD_VELOCITY;
-			Double velocity = 20.0;
+			Double velocity = getVelocity(busIMInfo.getLastGPSPoint(), busIMInfo.getPenultimateGPSPoint()) * THRESHOLD_VELOCITY;
+
+			// in cases where bulma streaming chooses the wrong shape sequence, the velocity gets crazy
+			if (velocity >= MAX_VELOCITY) {
+				velocity = MAX_VELOCITY * THRESHOLD_VELOCITY;
+			}
+			
 			return getNextClosestShapePoint(velocity, busIMInfo);
 		}
 
-		return busIMInfo.getLastGPSPoint().getLatLng();
+		return busIMInfo.getLastLatLng();
 	}
 
 	private Double getVelocity(GPSPoint lastGPSPoint, GPSPoint penultimateGPSPoint) {
 		Double distance = lastGPSPoint.getDistanceTraveled() - penultimateGPSPoint.getDistanceTraveled();
-		float time = lastGPSPoint.getSeconds() - penultimateGPSPoint.getSeconds();
+		long time = lastGPSPoint.getTime() - penultimateGPSPoint.getTime();
 
 		if (time > 0) {
 			return Math.abs(distance / time);
@@ -797,7 +789,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		}
 
 		if (rowsShape != null && rowsShape.length > 0) {
-			bulmaFilter.populateListShapes(rowsShape);
+			bulmaFilter.populateListShapes(rowsShape, getSelectedPath());
 		}
 	}
 	
@@ -817,7 +809,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 	private Marker setMarkerContent(Marker marker, GPSPoint gpsPoint) {
 		marker.setTitle(gpsPoint.getBusCode());
 		String stringContent = "<p>" + "Bus Code: " + gpsPoint.getBusCode() + "</p>" + "<p>" + "Route: "
-				+ gpsPoint.getRoute() + "</p>" + "<p>" + "Last Update: " + gpsPoint.getCurrentTime() + "</p>" + "<p>"
+				+ gpsPoint.getRoute() + "</p>" + "<p>" + "Last Update: " + gpsPoint.getTimeStamp() + "</p>" + "<p>"
 				+ "Situation: " + gpsPoint.getSituation() + "</p>";
 
 		marker.setData(stringContent);
@@ -862,6 +854,8 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 
 				try {
 					String route = fields[0];
+					Double latShape = Double.valueOf(fields[1]);
+					Double lngShape = Double.valueOf(fields[2]);
 					Double distanceTraveled = Double.valueOf(fields[3]);
 					String shapeSequence = fields[4];
 					String shapeId = fields[5];
@@ -872,8 +866,9 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 					String expectedTime = fields[12];
 					String currentTime = fields[13];
 					String situation = fields[14];
+					
 
-					GPSPoint gpsPoint = new GPSPoint(new LatLng(latBus, lngBus), problem, busCode, currentTime, shapeId,
+					GPSPoint gpsPoint = new GPSPoint(new LatLng(latBus, lngBus), new LatLng(latShape, lngShape), problem, busCode, currentTime, shapeId,
 							shapeSequence, distanceTraveled, route, expectedTime, currentTime, situation);
 
 					GPSPoint penultimateGPSPoint = null;
