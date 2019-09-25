@@ -239,6 +239,8 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 							busIMInfo.setShapeSequence(shapeSequence);
 							// TODO Mudar a linha abaixo
 //							busIMInfo.getLastGPSPoint().setShapeSequence(shapeSequence);
+							busIMInfo.getPenultimateGPSPoint().setLatLng(busIMInfo.getLastGPSPoint().getLatLng());
+							
 							busIMInfo.getLastGPSPoint().setLatLng(currentShapePoint.getLatLng());
 							busIMInfo.setLastTime(systemTime);
 							busInMoviment.put(busIMInfo.getLastGPSPoint().getBusCode(), busIMInfo);
@@ -625,7 +627,8 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 
 		// Atualiza de acordo com GPS
 		if (busIMInfo.getPenultimateGPSPoint() != null && !busIMInfo.getLastGPSPoint().isAboveThreshold()) {
-			Double velocity = getVelocity(busIMInfo.getLastGPSPoint(), busIMInfo.getPenultimateGPSPoint()) * THRESHOLD_VELOCITY;
+			//Double velocity = getVelocity(busIMInfo.getLastGPSPoint(), busIMInfo.getPenultimateGPSPoint()) * THRESHOLD_VELOCITY;
+			Double velocity = 20.0;
 			return getNextClosestShapePoint(velocity, busIMInfo);
 		}
 
@@ -634,7 +637,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 
 	private Double getVelocity(GPSPoint lastGPSPoint, GPSPoint penultimateGPSPoint) {
 		Double distance = lastGPSPoint.getDistanceTraveled() - penultimateGPSPoint.getDistanceTraveled();
-		long time = lastGPSPoint.getTime() - penultimateGPSPoint.getTime();
+		float time = lastGPSPoint.getSeconds() - penultimateGPSPoint.getSeconds();
 
 		if (time > 0) {
 			return Math.abs(distance / time);
