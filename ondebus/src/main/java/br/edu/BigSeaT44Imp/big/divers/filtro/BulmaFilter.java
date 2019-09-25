@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.primefaces.model.map.LatLng;
 
+import br.edu.BigSeaT44Imp.big.divers.bean.BulmaRTBean;
 import br.edu.BigSeaT44Imp.big.divers.model.Bus;
 import br.edu.BigSeaT44Imp.big.divers.model.BusStopInfo;
 import br.edu.BigSeaT44Imp.big.divers.model.ShapeLine;
@@ -118,12 +119,12 @@ public class BulmaFilter {
 		busMap.put(previousBusCode, currentBus);
 	}
 	
-	public void populateListShapes(String[] rowsShape) {
+	public void populateListShapes(String[] rowsShape, String city) {
 		String previousShapeId = null;
 		ShapeLine currentShapeLine = null;
 
 		for (int i = 1; i < rowsShape.length; i++) {
-			ShapePoint shapePoint = createShapePoint(rowsShape[i]);
+			ShapePoint shapePoint = createShapePoint(rowsShape[i], city);
 
 			if (previousShapeId == null) {
 
@@ -150,7 +151,7 @@ public class BulmaFilter {
 		shapesMap.get(currentShapeLine.getRoute()).add(currentShapeLine);
 	}
 
-	private ShapePoint createShapePoint(String line) {
+	private ShapePoint createShapePoint(String line, String city) {
 		String[] splittedLine = line.split(",");
 		String route = splittedLine[0].replaceAll("\"", "");
 		String shapeId = splittedLine[1];
@@ -159,7 +160,7 @@ public class BulmaFilter {
 		//TODO
 		String ss = splittedLine[4];
 		Float distanceTraveled = Float.valueOf(splittedLine[5]);
-		return new ShapePoint(route, shapeId, ss, new LatLng(Double.valueOf(lat), Double.valueOf(lng)), distanceTraveled);
+		return new ShapePoint(route, shapeId, ss, new LatLng(Double.valueOf(lat), Double.valueOf(lng)), distanceTraveled, city);
 	}
  	
 	public String getSelectedRoute() {

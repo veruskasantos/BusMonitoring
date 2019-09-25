@@ -142,7 +142,7 @@ public class ProgressBarBean extends AbstractBean implements Serializable {
 		}
 
 		if (rowsShape != null && rowsShape.length > 0) {
-			bulmaFilter.populateListShapes(rowsShape);
+			bulmaFilter.populateListShapes(rowsShape, getSelectedPath());
 		}
 	}
 
