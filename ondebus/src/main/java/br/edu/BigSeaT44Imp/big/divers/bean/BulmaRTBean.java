@@ -124,12 +124,10 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 	}
 	
 	public void onPageLoad() {
-		RequestContext.getCurrentInstance().addCallbackParam("newMarkers", new Gson().toJson(""));
-		cleanMap();
-		bbBusCodeRoute.clear();
-		bbDetection = false;
-
-		ajaxPoll();
+//		RequestContext.getCurrentInstance().addCallbackParam("newMarkers", new Gson().toJson(""));
+//		cleanMap();
+//		bbBusCodeRoute.clear();
+//		bbDetection = false;
 	}
 
 	public void populateCitiesNameList() {
