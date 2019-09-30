@@ -13,8 +13,8 @@ public class ManageHDFile {
 
 	private static final String LINE_SEPARATOR = "\n";
 //	private static final String userPath = "C:/Users/Lucas/workspace/BusMonitoring/data";
-//	private static final String userPath = "/home/veruska/Documentos/Mestrado/BusMonitoring/data";
-	private static final String userPath = "/home/andreza/Documents/BusMonitoring/data";
+	private static final String userPath = "/home/veruska/Documentos/Mestrado/BusMonitoring/data";
+//	private static final String userPath = "/home/andreza/Documents/BusMonitoring/data";
 
 	public static File[] listFiles(String path) throws Exception {
 		File[] files = new File(userPath + path).listFiles();

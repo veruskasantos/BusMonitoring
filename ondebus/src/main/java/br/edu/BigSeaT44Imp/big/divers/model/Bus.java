@@ -69,8 +69,9 @@ public class Bus implements Serializable {
 		if (!this.mapTrips.containsKey(trip)) {
 			this.mapTrips.put(trip, new ArrayList<GPSPoint>());
 		}
-
-		this.mapTrips.get(trip).add(new GPSPoint(coord, problem, null, null, null, null, null, null, null, null, null));
+ 
+		//this.mapTrips.get(trip).add(new GPSPoint(coord, problem, null, null, null, null, null, null, null, null, null)); TODO line used before ondebus
+		this.mapTrips.get(trip).add(new GPSPoint(coord, null, null, null, null, null, null, null, null, null, null, null));
 		this.numberOfPoints++;
 		this.listNumberPoints.add(numberOfPoints);
 	}
