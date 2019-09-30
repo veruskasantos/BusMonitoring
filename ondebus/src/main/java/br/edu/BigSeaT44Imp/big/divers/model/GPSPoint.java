@@ -23,7 +23,7 @@ public class GPSPoint extends GeoPoint implements Serializable {
 	private LatLng latLongShape;
 
 	public GPSPoint(LatLng latLng, LatLng latLngShape, String problem, String busCode, String timestamp, String shapeId,
-			String shapeSequence, Double distanceTraveled, String route, String expectedTime, String currentTime, String situation ) {
+			String shapeSequence, Double distanceTraveled, String route, String expectedTime, String currentTime, String situation) {
 		super(latLng, route);
 		this.latLongShape = latLngShape;
 		this.problem = problem;
