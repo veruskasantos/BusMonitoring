@@ -70,7 +70,7 @@ public class Bus implements Serializable {
 			this.mapTrips.put(trip, new ArrayList<GPSPoint>());
 		}
 
-		this.mapTrips.get(trip).add(new GPSPoint(coord, problem, null, null, null, null, null, null, null, null, null));
+		this.mapTrips.get(trip).add(new GPSPoint(coord, null, problem, null, null, null, null, null, null, null, null, null));
 		this.numberOfPoints++;
 		this.listNumberPoints.add(numberOfPoints);
 	}

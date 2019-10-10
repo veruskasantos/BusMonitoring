@@ -315,7 +315,7 @@ public class FileBean extends AbstractBean implements Serializable {
 
 		} else {
 			bulmaFilter.setShapeFilePath(shapePath);
-			bulmaFilter.populateListShapes(rowsShape);
+			bulmaFilter.populateListShapes(rowsShape, getSelectedPath());
 		}
 	}
 	

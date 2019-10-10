@@ -115,7 +115,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 		count = 0;
 		bbCount = 0;
 		
-		selectedDetection = "Distance";
+		selectedDetection = "Headway";
 
 		listBusCode = new ArrayList<>();
 		listRoutes = new ArrayList<>();
@@ -324,40 +324,46 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 			String busCode = entry.getKey();
 			String route = busIMI.getLastGPSPoint().getRoute();
 			
-			if (busIMI != null && busIMI.getLastGPSPoint() != null && bulmaFilter.getBusStopPoints().containsKey(route)) {
+			if (busIMI != null && busIMI.getLastGPSPoint() != null && busIMI.getPenultimateGPSPoint() != null && bulmaFilter.getBusStopPoints().containsKey(route)) {
 				
-				int stopSequence = 1;
+				/*String SS1 = busIMI.getPenultimateGPSPoint().getShapeSequence();
+				String SS2 = busIMI.getLastGPSPoint().getShapeSequence();
 				
-				while (bulmaFilter.getBusStopPoints().get(route).containsKey(stopSequence)) {
-					List<BusStopInfo> busStopPoints = bulmaFilter.getBusStopPoints().get(route).get(stopSequence);
-					
-					for (int i = 0; i < busStopPoints.size(); i++) {
-						BusStopInfo busStop = busStopPoints.get(i);
-						
-						if (bbIsBetween(busIMI, busStop)) {
-							
-							float headwayProgramado = 0;
-							
-							headwayProgramado = (i + 1) < busStopPoints.size() ? Math.abs(busStop.getSeconds() - busStopPoints.get(i + 1).getSeconds()) :	Math.abs(busStop.getSeconds() - busStopPoints.get(i - 1).getSeconds());
-							
-							String busOnStopTimeStamp = bbInterpolation(busIMI, busStop);
-							
-							BusHeadwayInfo busHeadwayInfo = new BusHeadwayInfo(route, busCode, headwayProgramado, busOnStopTimeStamp);
-							
-							bbBusHeadwayPopulate(route, busStop, busHeadwayInfo);
-							
-							bbHeadwayPopulate(route, busStop, headwayProgramado);
-						}
-					}
-					stopSequence++;
+				if (Integer.parseInt(SS1) > Integer.parseInt(SS2)) {
+					SS1 = busIMI.getLastGPSPoint().getShapeSequence();
+					SS2 = busIMI.getPenultimateGPSPoint().getShapeSequence();
 				}
+				for (int stopSequence = Integer.parseInt(SS1); stopSequence <= Integer.parseInt(SS2); stopSequence++) {*/
+				int stopSequence = 1;
+					while (bulmaFilter.getBusStopPoints().get(route).containsKey(stopSequence)) {
+						List<BusStopInfo> busStopPoints = bulmaFilter.getBusStopPoints().get(route).get(stopSequence);
+						
+						for (int i = 0; i < busStopPoints.size(); i++) {
+							BusStopInfo busStop = busStopPoints.get(i);
+							
+							if (bbIsBetween(busIMI, busStop)) {
+								
+								float headwayProgramado = 0;
+								
+								headwayProgramado = (i + 1) < busStopPoints.size() ? Math.abs(busStop.getSeconds() - busStopPoints.get(i + 1).getSeconds()) :	Math.abs(busStop.getSeconds() - busStopPoints.get(i - 1).getSeconds());
+								
+								String busOnStopTimeStamp = bbInterpolation(busIMI, busStop);
+								
+								BusHeadwayInfo busHeadwayInfo = new BusHeadwayInfo(route, busCode, headwayProgramado, busOnStopTimeStamp);
+								
+								bbBusHeadwayPopulate(route, busStop, busHeadwayInfo);
+								
+								bbHeadwayPopulate(route, busStop, headwayProgramado);
+							}
+						}
+						stopSequence++;
+					}
+				//}
 			}		
 		}
 	}
 	
 	private void bbDistanceDetection() {
-		bbDistance.clear();
-		
 		Map<String, LinkedList<BusInMovementInfo>> groupedBusesByRoute = new HashMap<String, LinkedList<BusInMovementInfo>>();
 		
 		listRoutes.forEach((route) -> groupedBusesByRoute.put(route, new LinkedList<BusInMovementInfo>()));
@@ -387,7 +393,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 					float time = Math.abs(headBus.getLastGPSPoint().getSeconds() - nextBus.getLastGPSPoint().getSeconds());
 					
 					if (distance < tresholdDistance && time < 60 && headBus.getLastGPSPoint().getShapeId().equalsIgnoreCase(nextBus.getLastGPSPoint().getShapeId())) {
-						bbDistancePopulate(route, headBus, nextBus);
+						//bbDistancePopulate(route, headBus, nextBus);
 						bbDistanceGenerateData(headBus, nextBus, lengthRoute, nOfBusesOnRoute, tresholdDistance, distance, time);
 						if (!bbBusCodeRoute.containsKey(headBus.getLastGPSPoint().getBusCode())) {
 							bbBusCodeRoutePopulate(headBus.getLastGPSPoint().getBusCode(), headBus.getLastGPSPoint().getRoute());
@@ -424,7 +430,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 			
 			if (headwayReal < (headwayProgramado / 4)) {
 				
-				Pairwise<BusHeadwayInfo, BusHeadwayInfo> busesInBB = Pairwise.create(bus1, bus2);
+				/*Pairwise<BusHeadwayInfo, BusHeadwayInfo> busesInBB = Pairwise.create(bus1, bus2);
 				
 				if (!bbHeadway.containsKey(route)) {
 					bbHeadway.put(route, new LinkedList<Pairwise<BusHeadwayInfo, BusHeadwayInfo>>());
@@ -434,7 +440,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 				} else {
 					bbHeadway.get(route).remove(busesInBB);
 					bbHeadway.get(route).add(busesInBB);
-				}
+				}*/
 				if (!bbBusCodeRoute.containsKey(bus1.getBusCode())) {
 					bbBusCodeRoutePopulate(bus1.getBusCode(), bus1.getRoute());
 				}
@@ -532,7 +538,7 @@ public class BulmaRTBean extends AbstractBean implements Serializable {
 			   + bus1.getHeadwayProgramado() + ","
 			   + headwayProgramado + ","
 			   + headwayReal + ","
-			   + (headwayProgramado / 4) + ","
+			   + (headwayProgramado / 4)
 			   + LINE_SEPARATOR;
 		
 		String file = ManageHDFile.openFile(getSelectedPath() + "/output_bb/bbDistanceOutput.csv");
