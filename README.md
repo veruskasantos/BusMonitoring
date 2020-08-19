@@ -1,3 +1,5 @@
+ATENÇÃO: adicionar arquivo conf.properties em ondebus/
+
 ---RODANDO LOCALMENTE--
 
 1. Roda OndeBUS App
